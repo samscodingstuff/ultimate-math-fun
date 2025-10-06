@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ULTIMATE MATH FUN V3</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --neon: #00ffff; /* change this hex to set the neon color */
+  }
+  body {
+    margin: 0;
+    height: 100vh;
+    display: grid;
+    place-items: center;
+    background: radial-gradient(circle at top left, #00111f, #000);
+    font-family: 'Poppins', sans-serif;
+    overflow: hidden;
+    cursor: none; /* hide default cursor so neon is the pointer */
+  }
+
+  h1 {
+    font-size: clamp(28px, 6vw, 64px);
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    animation: pop 1s ease-out forwards;
+    text-shadow: 0 0 20px var(--neon), 0 0 40px var(--neon), 0 0 60px var(--neon);
+    margin: 0;
+    padding: 12px;
+  }
+
+  span.v3 {
+    display: inline-block;
+    font-size: 0.55em;
+    background: var(--neon);
+    color: #031022;
+    padding: 6px 10px;
+    border-radius: 8px;
+    animation: popbadge 1s ease-out 0.28s forwards;
+    opacity: 0;
+  }
+
+  /* main glowing orb (largest, centered on pointer) */
+  .cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 28px;
+    height: 28px;
+    background: var(--neon);
+    border-radius: 50%;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    box-shadow: 0 0 18px var(--neon), 0 0 36px var(--neon), 0 0 80px var(--neon);
+    transform: translate(-50%, -50%);
+    transition: transform 0.05s linear;
+  }
+
+  /* small trailing dots */
+  .trail {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 18px;
+    height: 18px;
+    background: var(--neon);
+    border-radius: 50%;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    box-shadow: 0 0 10px var(--neon), 0 0 28px var(--neon), 0 0 60px var(--neon);
+    opacity: 0.85;
+    transform: translate(-50%, -50%);
+  }
+
+  @keyframes pop {
+    0% { transform: rotateX(70deg) scale(0.2); opacity: 0; filter: blur(10px); }
+    60% { transform: rotateX(-10deg) scale(1.08); opacity: 1; filter: blur(0); }
+    100% { transform: rotateX(0deg) scale(1); opacity:1; }
+  }
+  @keyframes popbadge {
+    0% { transform: translateY(20px) scale(0.5); opacity: 0; }
+    80% { transform: translateY(-5px) scale(1.08); opacity: 1; }
+    100% { transform: translateY(0) scale(1); opacity: 1; }
+  }
+</style>
+</head>
+<body>
+  <h1>ULTIMATE MATH FUN <span class="v3">V3</span></h1>
+
+  <div class="cursor"></div>
+
+<script>
+  // neon trail script
+  const cursor = document.querySelector('.cursor');
+
+  // create trailing dots
+  const numTrails = 10;
+  const trails = [];
+  for (let i = 0; i < numTrails; i++) {
+    const el = document.createElement('div');
+    el.className = 'trail';
+    document.body.appendChild(el);
+    trails.push({ el, x: window.innerWidth/2, y: window.innerHeight/2 });
+  }
+
+  let mouseX = window.innerWidth / 2;
+  let mouseY = window.innerHeight / 2;
+  document.addEventListener('mousemove', e => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    // instantly move main orb (no smoothing)
+    cursor.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
+  });
+
+  // Smooth trailing movement
+  function animate() {
+    let x = mouseX;
+    let y = mouseY;
+    trails.forEach((t, i) => {
+      // simple easing for trailing effect
+      t.x += (x - t.x) * (0.18 - i * 0.012);
+      t.y += (y - t.y) * (0.18 - i * 0.012);
+      const scale = 1 - i * 0.07;
+      t.el.style.transform = `translate(${t.x}px, ${t.y}px) scale(${scale})`;
+      t.el.style.opacity = 0.9 - i * 0.08;
+      x = t.x;
+      y = t.y;
+    });
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+  // For mobile: make orb follow touch
+  document.addEventListener('touchmove', e => {
+    const t = e.touches[0];
+    mouseX = t.clientX;
+    mouseY = t.clientY;
+    cursor.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
+  }, {passive:true});
+</script>
+</body>
+</html>
